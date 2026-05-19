@@ -13,208 +13,210 @@
     
     <!-- 화면 디자인(CSS) 영역 시작 -->
     <style>
-        /* CSS 변수를 활용하여 다크 모드와 라이트 모드의 색상을 쉽게 전환할 수 있게 만듭니다 */
-        :root {
-            /* 기본 테마: 라이트 모드 (시원하고 청량한 에메랄드 해변 테마 - Coastal Beach) */
-            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
-            --calc-bg: rgba(255, 255, 255, 0.45);
-            --calc-border: rgba(255, 255, 255, 0.5);
-            --calc-shadow: rgba(8, 47, 73, 0.12);
-            --text-primary: #0f172a;
-            --text-secondary: #475569;
-            --btn-normal: rgba(224, 242, 254, 0.5);
-            --btn-normal-hover: rgba(186, 230, 253, 0.75);
-            --btn-normal-active: rgba(125, 211, 252, 0.9);
-            --btn-op: rgba(56, 189, 248, 0.4);
-            --btn-op-hover: rgba(56, 189, 248, 0.65);
-            --btn-vat: rgba(14, 165, 233, 0.2);
-            --btn-vat-hover: rgba(14, 165, 233, 0.45);
-            --btn-equal: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
-            --btn-equal-hover: linear-gradient(135deg, #38bdf8 0%, #1d4ed8 100%);
-            --btn-text-equal: #ffffff;
-            --history-bg: rgba(224, 242, 254, 0.3);
-            --toast-bg: rgba(15, 23, 42, 0.9);
-            --toast-text: #ffffff;
-        }
+    /* 1. 구글 폰트에서 Plus Jakarta Sans 서체를 불러옵니다 */
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
-        [data-theme="dark"] {
-            /* 다크 모드 테마 (깊고 신비로운 심해 테마 - Deep Ocean) */
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #083344 50%, #0f766e 100%);
-            --calc-bg: rgba(15, 23, 42, 0.55);
-            --calc-border: rgba(255, 255, 255, 0.08);
-            --calc-shadow: rgba(0, 0, 0, 0.4);
-            --text-primary: #f8fafc;
-            --text-secondary: #cbd5e1;
-            --btn-normal: rgba(15, 23, 42, 0.5);
-            --btn-normal-hover: rgba(30, 41, 59, 0.85);
-            --btn-normal-active: rgba(51, 65, 85, 0.95);
-            --btn-op: rgba(20, 184, 166, 0.35);
-            --btn-op-hover: rgba(20, 184, 166, 0.55);
-            --btn-vat: rgba(6, 182, 212, 0.25);
-            --btn-vat-hover: rgba(6, 182, 212, 0.45);
-            --btn-equal: linear-gradient(135deg, #06b6d4 0%, #0d9488 100%);
-            --btn-equal-hover: linear-gradient(135deg, #22d3ee 0%, #0f766e 100%);
-            --btn-text-equal: #ffffff;
-            --history-bg: rgba(8, 51, 68, 0.4);
-            --toast-bg: rgba(248, 250, 252, 0.95);
-            --toast-text: #0f172a;
-        }
+    /* DESIGN.md에 정의된 디자인 시스템 토큰을 CSS 변수로 완벽 매핑 */
+    :root {
+        /* 디자인 시스템 컬러 칩 */
+        --color-background: #f4faff;
+        --color-surface-tint: #356477;
+        --color-on-surface: #001f2a;
+        --color-primary: #356477;         /* 스카이 블루 (오퍼레이터용) */
+        --color-on-primary: #ffffff;
+        --color-secondary: #006399;       /* 오션 블루 (이퀄 버튼용) */
+        --color-on-secondary: #ffffff;
+        --color-tertiary-container: #e7e1d3; /* 샌디 베이지 (기록/칩 배경용) */
+        --color-on-tertiary-container: #676459;
 
-        /* 브라우저 기본 마진과 패딩을 없애고 폰트를 적용합니다 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Outfit', 'Noto Sans KR', sans-serif;
-            /* 배경 전환 및 요소 인터랙션을 매끄럽게 만들기 위한 트랜지션 효과 */
-            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-        }
+        /* 글래스모피즘용 특수 컬러 (Sea Foam 효과) */
+        --calc-bg: rgba(255, 255, 255, 0.5); /* #FFFFFF80 서피스 효과 */
+        --calc-border: rgba(255, 255, 255, 0.3); /* 빛 반사를 위한 30% 화이트 테두리 */
+        --btn-numeric-bg: rgba(255, 255, 255, 0.6);
+        --btn-shadow: 0px 4px 10px rgba(0, 119, 182, 0.08); /* 부드러운 blue-tinted shadow (8%) */
 
-        /* 잔잔한 파도가 일렁이듯 배경의 그라데이션이 천천히 움직이게 하는 애니메이션 정의 */
-        @keyframes wave-motion {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
+        /* 여백 & 라운드값 (Spacing & Shapes) */
+        --spacing-lg: 32px;      /* 내부 패딩 */
+        --spacing-sm: 12px;      /* 버튼 사이 간격 */
+        --rounded-lg: 16px;      /* 일반 버튼 및 디스플레이 코너 */
+        --rounded-xl: 24px;      /* 메인 컨테이너 코너 */
+    }
 
-        body {
-            background: var(--bg-gradient);
-            background-size: 200% 200%; /* 움직이는 파도 효과를 위해 캔버스를 2배로 확장 */
-            animation: wave-motion 15s ease infinite; /* 15초 동안 끝없이 물결치듯 움직임 */
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            overflow-x: hidden;
-        }
+    /* 다크 모드가 활성화되어도 해안가의 투명한 무드를 유지하도록 은은하게 보정 */
+    [data-theme="dark"] {
+        --color-background: #163440;
+        --color-on-surface: #e0f4ff;
+        --calc-bg: rgba(0, 31, 42, 0.45);
+        --calc-border: rgba(255, 255, 255, 0.1);
+        --btn-numeric-bg: rgba(255, 255, 255, 0.1);
+        --btn-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    }
 
-        /* 메인 컨테이너: 계산기와 계산기록을 감싸는 박스 */
-        .app-container {
-            display: flex;
-            gap: 24px;
-            max-width: 900px;
-            width: 100%;
-            perspective: 1000px; /* 3D 입체 효과 부여 */
-        }
+    /* 브라우저 초기화 및 지정 폰트 적용 */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, transform 0.1s ease;
+    }
 
-        /* 글래스모피즘(맑은 유리창 느낌) 효과를 주는 공통 스타일 */
-        .glass-panel {
-            background: var(--calc-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid var(--calc-border);
-            border-radius: 24px;
-            box-shadow: 0 12px 40px 0 var(--calc-shadow);
-        }
+    body {
+        /* Tertiary(샌디 베이지)와 Background(스카이 블루)가 결합된 잔잔하고 부드러운 해안가 배경 */
+        background: linear-gradient(135deg, var(--color-background) 0%, #eef7fc 50%, #e7e1d3 100%);
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: var(--spacing-lg);
+    }
 
-        /* 왼쪽 계산기 본체 스타일 */
-        .calculator {
-            flex: 1.2;
-            padding: 28px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            position: relative;
-            overflow: hidden;
-        }
+    .app-container {
+        display: flex;
+        gap: 24px;
+        max-width: 900px;
+        width: 100%;
+    }
 
-        /* 계산기 위에 은은한 바다의 윤슬(물빛 반사) 조명 효과 추가 */
-        .calculator::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%);
-            pointer-events: none;
-        }
+    /* Level 1: 메인 계산기 몸체 (The Glass Base) */
+    .glass-panel {
+        background: var(--calc-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--calc-border);
+        border-radius: var(--rounded-xl); /* rounded-xl (24px) */
+        box-shadow: 0 20px 40px rgba(0, 31, 42, 0.06);
+    }
 
-        /* 상단 유틸리티바 (테마 전환, 수식 복사 버튼) */
-        .calc-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+    .calculator {
+        flex: 1.2;
+        padding: var(--spacing-lg); /* internal padding lg (32px) */
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-lg); /* 레이아웃이 숨을 쉴 수 있는 여유로운 여백 */
+    }
 
-        .calc-title {
-            font-size: 14px;
-            font-weight: 800;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+    /* 상단 영역 */
+    .calc-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
 
-        .calc-title span {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: #0ea5e9; /* 시원한 블루톤 표시등으로 변경 */
-            border-radius: 50%;
-            box-shadow: 0 0 8px #0ea5e9;
-        }
+    .calc-title {
+        /* 타이포그래피 label-lg 스타일 적용 */
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--color-surface-tint);
+    }
 
-        .header-controls {
-            display: flex;
-            gap: 10px;
-        }
+    /* 계산기 디스플레이 (숫자가 투명 유리에 투사된 느낌의 Glow 효과) */
+    .display-area {
+        background: transparent; /* 테두리 없는 깔끔한 투명 레이아웃 */
+        padding: 10px 0;
+        text-align: right;
+        min-height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        border: none;
+        
+        /* display-lg 타이포그래피 */
+        font-size: 48px;
+        font-weight: '700';
+        line-height: 56px;
+        letter-spacing: -0.02em;
+        color: var(--color-on-surface);
+        
+        /* 숫자가 빛나는 듯한 은은한 텍스트 섀도우 효과 */
+        text-shadow: 0px 2px 8px rgba(53, 100, 119, 0.15);
+    }
 
-        /* 아이콘 버튼 스타일 (테마 변경, 결과 복사용) */
-        .icon-btn {
-            background: var(--btn-normal);
-            border: 1px solid var(--calc-border);
-            color: var(--text-primary);
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 16px;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+    /* 버튼 그리드 레이아웃 */
+    .buttons-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: var(--spacing-sm); /* 버튼 사이의 간격 sm (12px) */
+    }
 
-        .icon-btn:hover {
-            transform: translateY(-2px);
-            background: var(--btn-normal-hover);
-            box-shadow: 0 4px 12px rgba(8, 47, 73, 0.08);
-        }
+    /* Level 2: 공통 버튼 기초 스타일 (Pebble 조약돌 형태) */
+    .btn {
+        border: 1px solid var(--calc-border);
+        border-radius: var(--rounded-lg); /* 조약돌처럼 둥근 모서리 rounded-lg (16px) */
+        height: 64px;
+        font-size: 18px;
+        font-weight: 600;
+        cursor: pointer;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        box-shadow: var(--btn-shadow);
+    }
 
-        .icon-btn:active {
-            transform: translateY(1px);
-        }
+    /* 버튼 위에 마우스를 올렸을 때 (Hover) */
+    .btn:hover {
+        transform: translateY(-1px);
+        background-color: rgba(255, 255, 255, 0.8);
+    }
 
-        /* 계산기 화면판(디스플레이) 디자인 */
-        .display-area {
-            background: rgba(224, 242, 254, 0.2); /* 은은한 투명 물빛 색감 */
-            border-radius: 16px;
-            padding: 20px;
-            text-align: right;
-            min-height: 120px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            gap: 8px;
-            border: 1px solid rgba(14, 165, 233, 0.1);
-            word-wrap: break-word;
-            word-break: break-all;
-        }
+    /* 인터랙션: 버튼을 눌렀을 때 섀도우가 사라지며 부드러운 모래에 눌리는 효과 */
+    .btn:active {
+        transform: scale(0.98); /* 살짝 작아짐 (98%) */
+        box-shadow: none;       /* 그림자 소실 */
+    }
 
-        [data-theme="dark"] .display-area {
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-        }
+    /* 각 컴포넌트별 색상 분기 처리 */
+    
+    /* 1. 숫자 버튼 (Numeric) */
+    .btn-numeric {
+        background: var(--btn-numeric-bg);
+        color: var(--color-on-surface);
+    }
+
+    /* 2. 연산자 버튼 (Operators) */
+    .btn-operator {
+        background: var(--color-primary); /* Solid 파스텔 블루 */
+        color: var(--color-on-primary);
+    }
+    .btn-operator:hover {
+        background: #2a5263;
+    }
+
+    /* 3. 이퀄 버튼 (Equals) */
+    .btn-equal {
+        background: var(--color-secondary); /* 높은 대비의 오션 블루 */
+        color: var(--color-on-secondary);
+        font-weight: 700;
+    }
+    .btn-equal:hover {
+        background: #005280;
+    }
+
+    /* 4. 기능/유틸리티 버튼 (Clear, Memory 등) */
+    .btn-utility {
+        background: rgba(255, 255, 255, 0.3);
+        color: var(--color-surface-tint);
+        /* label-lg 스타일의 대문자 형태 */
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    /* 역사/히스토리 칩 디자인 (Sandy Beige 적용) */
+    .history-chip {
+        background-color: var(--color-tertiary-container); /* 샌디 베이지 채우기 */
+        color: var(--color-on-tertiary-container);
+        border-radius: 9999px; /* 완전한 알약(Pill) 모양 */
+        padding: 6px 14px;
+        font-size: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+</style>
 
         /* 수식 계산 도중을 표시하는 작은 텍스트 영역 */
         .formula-screen {
