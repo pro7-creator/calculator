@@ -1,0 +1,6 @@
+{
+  "artifactType":  "ARTIFACT_TYPE_IMPLEMENTATION_PLAN",
+  "summary":  "업무용 계산기 제작을 위한 구현 계획서입니다. 기본적인 사칙연산과 부가세(VAT) 계산 기능, 세련된 글래스모피즘 디자인 및 계산 기록(History) 기능을 갖춘 웹 애플리케이션 구축 계획과, AI에게 계산기 제작을 요청할 때 활용할 수 있는 최적의 프롬프트를 담고 있습니다.",
+  "updatedAt":  "2026-05-18T09:05:26.822516400Z",
+  "requestFeedback":  true
+}

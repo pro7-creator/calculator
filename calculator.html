@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <!-- 반응형 디자인을 지원하여 스마트폰, 태블릿, PC 어디서든 최적의 크기로 보이게 합니다 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Antigravity 프리미엄 업무용 바다 계산기</title>
+    
+    <!-- 구글 폰트에서 세련되고 둥근 느낌의 프리미엄 폰트(Outfit)를 가져옵니다 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <!-- 화면 디자인(CSS) 영역 시작 -->
+    <style>
+        /* CSS 변수를 활용하여 다크 모드와 라이트 모드의 색상을 쉽게 전환할 수 있게 만듭니다 */
+        :root {
+            /* 기본 테마: 라이트 모드 (시원하고 청량한 에메랄드 해변 테마 - Coastal Beach) */
+            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 50%, #7dd3fc 100%);
+            --calc-bg: rgba(255, 255, 255, 0.45);
+            --calc-border: rgba(255, 255, 255, 0.5);
+            --calc-shadow: rgba(8, 47, 73, 0.12);
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --btn-normal: rgba(224, 242, 254, 0.5);
+            --btn-normal-hover: rgba(186, 230, 253, 0.75);
+            --btn-normal-active: rgba(125, 211, 252, 0.9);
+            --btn-op: rgba(56, 189, 248, 0.4);
+            --btn-op-hover: rgba(56, 189, 248, 0.65);
+            --btn-vat: rgba(14, 165, 233, 0.2);
+            --btn-vat-hover: rgba(14, 165, 233, 0.45);
+            --btn-equal: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
+            --btn-equal-hover: linear-gradient(135deg, #38bdf8 0%, #1d4ed8 100%);
+            --btn-text-equal: #ffffff;
+            --history-bg: rgba(224, 242, 254, 0.3);
+            --toast-bg: rgba(15, 23, 42, 0.9);
+            --toast-text: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            /* 다크 모드 테마 (깊고 신비로운 심해 테마 - Deep Ocean) */
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #083344 50%, #0f766e 100%);
+            --calc-bg: rgba(15, 23, 42, 0.55);
+            --calc-border: rgba(255, 255, 255, 0.08);
+            --calc-shadow: rgba(0, 0, 0, 0.4);
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --btn-normal: rgba(15, 23, 42, 0.5);
+            --btn-normal-hover: rgba(30, 41, 59, 0.85);
+            --btn-normal-active: rgba(51, 65, 85, 0.95);
+            --btn-op: rgba(20, 184, 166, 0.35);
+            --btn-op-hover: rgba(20, 184, 166, 0.55);
+            --btn-vat: rgba(6, 182, 212, 0.25);
+            --btn-vat-hover: rgba(6, 182, 212, 0.45);
+            --btn-equal: linear-gradient(135deg, #06b6d4 0%, #0d9488 100%);
+            --btn-equal-hover: linear-gradient(135deg, #22d3ee 0%, #0f766e 100%);
+            --btn-text-equal: #ffffff;
+            --history-bg: rgba(8, 51, 68, 0.4);
+            --toast-bg: rgba(248, 250, 252, 0.95);
+            --toast-text: #0f172a;
+        }
+
+        /* 브라우저 기본 마진과 패딩을 없애고 폰트를 적용합니다 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', 'Noto Sans KR', sans-serif;
+            /* 배경 전환 및 요소 인터랙션을 매끄럽게 만들기 위한 트랜지션 효과 */
+            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* 잔잔한 파도가 일렁이듯 배경의 그라데이션이 천천히 움직이게 하는 애니메이션 정의 */
+        @keyframes wave-motion {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-size: 200% 200%; /* 움직이는 파도 효과를 위해 캔버스를 2배로 확장 */
+            animation: wave-motion 15s ease infinite; /* 15초 동안 끝없이 물결치듯 움직임 */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* 메인 컨테이너: 계산기와 계산기록을 감싸는 박스 */
+        .app-container {
+            display: flex;
+            gap: 24px;
+            max-width: 900px;
+            width: 100%;
+            perspective: 1000px; /* 3D 입체 효과 부여 */
+        }
+
+        /* 글래스모피즘(맑은 유리창 느낌) 효과를 주는 공통 스타일 */
+        .glass-panel {
+            background: var(--calc-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--calc-border);
+            border-radius: 24px;
+            box-shadow: 0 12px 40px 0 var(--calc-shadow);
+        }
+
+        /* 왼쪽 계산기 본체 스타일 */
+        .calculator {
+            flex: 1.2;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 계산기 위에 은은한 바다의 윤슬(물빛 반사) 조명 효과 추가 */
+        .calculator::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        /* 상단 유틸리티바 (테마 전환, 수식 복사 버튼) */
+        .calc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calc-title {
+            font-size: 14px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .calc-title span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #0ea5e9; /* 시원한 블루톤 표시등으로 변경 */
+            border-radius: 50%;
+            box-shadow: 0 0 8px #0ea5e9;
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* 아이콘 버튼 스타일 (테마 변경, 결과 복사용) */
+        .icon-btn {
+            background: var(--btn-normal);
+            border: 1px solid var(--calc-border);
+            color: var(--text-primary);
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .icon-btn:hover {
+            transform: translateY(-2px);
+            background: var(--btn-normal-hover);
+            box-shadow: 0 4px 12px rgba(8, 47, 73, 0.08);
+        }
+
+        .icon-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* 계산기 화면판(디스플레이) 디자인 */
+        .display-area {
+            background: rgba(224, 242, 254, 0.2); /* 은은한 투명 물빛 색감 */
+            border-radius: 16px;
+            padding: 20px;
+            text-align: right;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            gap: 8px;
+            border: 1px solid rgba(14, 165, 233, 0.1);
+            word-wrap: break-word;
+            word-break: break-all;
+        }
+
+        [data-theme="dark"] .display-area {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        /* 수식 계산 도중을 표시하는 작은 텍스트 영역 */
+        .formula-screen {
+            font-size: 15px;
+            color: var(--text-secondary);
+            min-height: 20px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        /* 최종 숫자 결과값 화면 */
+        .result-screen {
+            font-size: 38px;
+            font-weight: 600;
+            color: var(--text-primary);
+            letter-spacing: -0.5px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+
+        /* 디스플레이 밑에 있는 스크롤바 디자인 제거 (눈에 거슬리지 않도록) */
+        .result-screen::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 계산기 자판(버튼 그룹) 레이아웃 */
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        /* 기본 계산기 버튼 디자인 */
+        .calc-btn {
+            background: var(--btn-normal);
+            border: 1px solid var(--calc-border);
+            color: var(--text-primary);
+            border-radius: 16px;
+            padding: 18px 0;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            user-select: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(8, 47, 73, 0.02);
+        }
+
+        /* 마우스 올렸을 때의 반응 */
+        .calc-btn:hover {
+            background: var(--btn-normal-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(8, 47, 73, 0.06);
+        }
+
+        /* 눌렀을 때 햅틱(쫀득하게) 눌리는 효과 */
+        .calc-btn:active {
+            transform: scale(0.96) translateY(0);
+            background: var(--btn-normal-active);
+            box-shadow: 0 2px 4px rgba(8, 47, 73, 0.04);
+        }
+
+        /* 기능 버튼(+, -, *, /, %, C 등) 강조색 적용 */
+        .btn-op {
+            background: var(--btn-op);
+            color: #0369a1; /* 청량한 블루 칼라 */
+        }
+        
+        [data-theme="dark"] .btn-op {
+            color: #2dd4bf; /* 다크모드 민트/아쿠아색 */
+        }
+
+        .btn-op:hover {
+            background: var(--btn-op-hover);
+        }
+
+        /* 업무용 부가세(VAT) 버튼 강조색 적용 */
+        .btn-vat {
+            background: var(--btn-vat);
+            color: #0284c7; /* 밝고 푸른 물빛 */
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        [data-theme="dark"] .btn-vat {
+            color: #22d3ee; /* 다크모드 형광 아쿠아 블루 */
+        }
+
+        .btn-vat:hover {
+            background: var(--btn-vat-hover);
+        }
+
+        /* 등호(=) 버튼 - 가장 중요한 결과 도출 버튼이므로 시원하고 강렬한 바다 그라데이션 적용 */
+        .btn-equal {
+            background: var(--btn-equal);
+            color: var(--btn-text-equal);
+            grid-column: span 1;
+        }
+
+        .btn-equal:hover {
+            background: var(--btn-equal-hover);
+        }
+
+        /* 오른쪽 계산 기록(History) 보관 패널 */
+        .history-panel {
+            flex: 0.8;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            max-height: 520px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--calc-border);
+            padding-bottom: 10px;
+        }
+
+        .history-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .clear-history-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .clear-history-btn:hover {
+            color: #ef4444; /* 마우스 올리면 빨갛게 경고색 */
+        }
+
+        /* 계산 기록 스크롤 영역 */
+        .history-list {
+            overflow-y: auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding-right: 4px;
+        }
+
+        /* 스크롤바 세련되게 다듬기 */
+        .history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .history-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .history-list::-webkit-scrollbar-thumb {
+            background: rgba(14, 165, 233, 0.15);
+            border-radius: 10px;
+        }
+
+        [data-theme="dark"] .history-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* 계산 기록이 비어있을 때 표시될 텍스트 */
+        .history-empty {
+            color: var(--text-secondary);
+            text-align: center;
+            font-size: 14px;
+            margin-top: 40px;
+            font-style: italic;
+        }
+
+        /* 계산 기록에 등록되는 개별 리스트 아이템 디자인 */
+        .history-item {
+            background: var(--history-bg);
+            border: 1px solid var(--calc-border);
+            padding: 12px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            text-align: right;
+            transition: all 0.2s ease;
+        }
+
+        .history-item:hover {
+            transform: translateX(-4px);
+            background: var(--btn-normal-hover);
+            box-shadow: 0 4px 8px rgba(8, 47, 73, 0.05);
+        }
+
+        .history-item-formula {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .history-item-result {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        /* 복사 성공 시 화면 아래에서 스르륵 올라오는 안내(Toast) 팝업 */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--toast-bg);
+            color: var(--toast-text);
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* 모바일 등 작은 화면에서 계산기와 기록을 위아래로 배치하기 위한 반응형 스타일 */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+                gap: 16px;
+            }
+            .calculator {
+                flex: 1;
+            }
+            .history-panel {
+                flex: 1;
+                max-height: 250px;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light"> <!-- 기본적으로 밝은 모드로 시작합니다 -->
+
+    <div class="app-container">
+        
+        <!-- 왼쪽: 계산기 본체 영역 -->
+        <main class="calculator glass-panel">
+            
+            <!-- 상단 바: 앱 이름과 조작 컨트롤 버튼 -->
+            <div class="calc-header">
+                <h1 class="calc-title">
+                    <span></span> Ocean Calculator
+                </h1>
+                <div class="header-controls">
+                    <!-- 복사 버튼 (클릭하면 화면 내 결과 복사) -->
+                    <button class="icon-btn" id="copy-btn" title="결과값 복사" onclick="copyToClipboard()">
+                        📋
+                    </button>
+                    <!-- 다크모드/라이트모드 변경 버튼 -->
+                    <button class="icon-btn" id="theme-btn" title="다크/라이트 모드 변경" onclick="toggleTheme()">
+                        🌙
+                    </button>
+                </div>
+            </div>
+
+            <!-- 계산 화면 (디스플레이 영역) -->
+            <div class="display-area">
+                <!-- 작은 수식이 나타나는 화면 -->
+                <div class="formula-screen" id="formula-display"></div>
+                <!-- 최종 결과 숫자 화면 -->
+                <div class="result-screen" id="result-display">0</div>
+            </div>
+
+            <!-- 자판 버튼 그리드 영역 -->
+            <div class="button-grid">
+                <!-- 1행: 초기화, 지우기, 퍼센트, 나누기 -->
+                <button class="calc-btn btn-op" onclick="clearAll()">C</button>
+                <button class="calc-btn btn-op" onclick="backspace()">⌫</button>
+                <button class="calc-btn btn-op" onclick="appendOperator('%')">%</button>
+                <button class="calc-btn btn-op" onclick="appendOperator('/')">÷</button>
+
+                <!-- 2행: 숫자 7, 8, 9, 곱하기 -->
+                <button class="calc-btn" onclick="appendNumber('7')">7</button>
+                <button class="calc-btn" onclick="appendNumber('8')">8</button>
+                <button class="calc-btn" onclick="appendNumber('9')">9</button>
+                <button class="calc-btn btn-op" onclick="appendOperator('*')">×</button>
+
+                <!-- 3행: 숫자 4, 5, 6, 빼기 -->
+                <button class="calc-btn" onclick="appendNumber('4')">4</button>
+                <button class="calc-btn" onclick="appendNumber('5')">5</button>
+                <button class="calc-btn" onclick="appendNumber('6')">6</button>
+                <button class="calc-btn btn-op" onclick="appendOperator('-')">-</button>
+
+                <!-- 4행: 숫자 1, 2, 3, 더하기 -->
+                <button class="calc-btn" onclick="appendNumber('1')">1</button>
+                <button class="calc-btn" onclick="appendNumber('2')">2</button>
+                <button class="calc-btn" onclick="appendNumber('3')">3</button>
+                <button class="calc-btn btn-op" onclick="appendOperator('+')">+</button>
+
+                <!-- 5행: 숫자 0, 백만단위 입력 편의 00, 소수점, 결과(=) -->
+                <button class="calc-btn" onclick="appendNumber('0')">0</button>
+                <button class="calc-btn" onclick="appendNumber('00')">00</button>
+                <button class="calc-btn" onclick="appendDecimal()">.</button>
+                <button class="calc-btn btn-equal" onclick="runCalculate()">=</button>
+
+                <!-- 6행: 세무/재무용 부가세 특화 연산 기능 -->
+                <!-- 공급가액에 10%를 얹어 합계를 구합니다 (금액 * 1.1) -->
+                <button class="calc-btn btn-vat" onclick="calculateVAT('include')" title="공급가에 부가세 10% 더하기">VAT +10%</button>
+                <!-- 부가세 포함 금액에서 원래 물건값(공급가)을 구합니다 (금액 / 1.1) -->
+                <button class="calc-btn btn-vat" onclick="calculateVAT('exclude')" title="합계금액에서 부가세 10% 제외하기">VAT -10%</button>
+                <!-- 공급가 기준 10%의 순수 세금액을 구합니다 (금액 * 0.1) -->
+                <button class="calc-btn btn-vat" onclick="calculateVAT('taxOnly')" title="공급가의 10% 세액만 추출">VAT 세액</button>
+                <!-- 부가세 포함 금액에 들어있는 부가세를 구합니다 (금액 / 11) -->
+                <button class="calc-btn btn-vat" onclick="calculateVAT('taxInside')" title="합계금액 내부 부가세(1/11) 추출">VAT 내부세</button>
+            </div>
+
+        </main>
+
+        <!-- 오른쪽: 계산 기록 영역 -->
+        <aside class="history-panel glass-panel">
+            <div class="history-header">
+                <h2 class="history-title">계산 기록 (History)</h2>
+                <button class="clear-history-btn" onclick="clearHistory()">모두 비우기</button>
+            </div>
+            <!-- 수식이 동적으로 추가될 공간 -->
+            <div class="history-list" id="history-container">
+                <div class="history-empty" id="history-empty-text">기록이 없습니다.</div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- 복사 성공 토스트 메세지 -->
+    <div class="toast" id="toast-message">
+        <span>✅</span> 결과값이 클립보드에 복사되었습니다!
+    </div>
+
+    <!-- 계산기 두뇌 역할(JavaScript) 시작 -->
+    <script>
+        // 전역 상태 변수들 (계산기의 기억 장치)
+        let currentInput = '0';          // 현재 입력 중인 숫자 (문자열 형태)
+        let previousInput = '';          // 이전에 보관했던 숫자
+        let selectedOperator = '';       // 사용자가 선택한 연산자 (+, -, *, /)
+        let shouldResetDisplay = false;  // 연산이 완료된 후 새로 숫자를 누를 때 화면 초기화 여부
+        let calculationHistory = [];    // 계산 완료된 내역들을 담는 목록 리스트
+
+        // DOM 객체 바인딩 (화면 요소들을 JS 변수로 매칭)
+        const formulaDisplay = document.getElementById('formula-display');
+        const resultDisplay = document.getElementById('result-display');
+        const historyContainer = document.getElementById('history-container');
+        const historyEmptyText = document.getElementById('history-empty-text');
+        const toastMessage = document.getElementById('toast-message');
+
+        // 페이지가 켜질 때 이전에 저장했던 계산기록을 자동으로 불러옵니다
+        window.onload = function() {
+            const savedHistory = localStorage.getItem('calc_history');
+            if (savedHistory) {
+                calculationHistory = JSON.parse(savedHistory);
+                renderHistory();
+            }
+        };
+
+        // 1. 숫자를 3자리마다 쉼표를 삽입하여 보기 편한 형식으로 리턴하는 유틸리티
+        // 예: "1234567.89" -> "1,234,567.89"
+        function formatNumberWithCommas(numberString) {
+            // 소수점 이하와 정수 부분을 분리합니다
+            const parts = numberString.split('.');
+            // 정수 부분에만 3자리 쉼표를 적용합니다
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            // 다시 소수점 부분과 합칩니다
+            return parts.join('.');
+        }
+
+        // 2. 반대로 쉼표가 들어간 금액에서 쉼표를 다 제거해 주는 유틸리티 (실제 컴퓨터 계산용)
+        // 예: "1,234,567.89" -> "1234567.89"
+        function cleanCommas(formattedString) {
+            return formattedString.replace(/,/g, '');
+        }
+
+        // 3. 디스플레이 화면을 최신 상태로 새로고침해 주는 함수
+        function updateDisplay() {
+            resultDisplay.textContent = formatNumberWithCommas(currentInput);
+            
+            // 수식(이전 연산) 표시 부분 업데이트
+            if (selectedOperator && previousInput !== '') {
+                // 곱하기, 나누기는 기호를 알기 쉽게 한글용으로 변환해서 표기합니다
+                let opChar = selectedOperator;
+                if (selectedOperator === '*') opChar = '×';
+                if (selectedOperator === '/') opChar = '÷';
+                formulaDisplay.textContent = `${formatNumberWithCommas(previousInput)} ${opChar}`;
+            } else {
+                formulaDisplay.textContent = '';
+            }
+        }
+
+        // 4. 숫자 자판 버튼을 눌렀을 때 실행되는 메인 함수
+        function appendNumber(num) {
+            // 결과 창이 리셋 상태이거나, 현재 화면이 '0'인데 '00' 또는 '0'을 연속해서 누를 때의 예외 처리
+            if (shouldResetDisplay) {
+                currentInput = num;
+                shouldResetDisplay = false;
+            } else {
+                if (currentInput === '0') {
+                    if (num === '00' || num === '0') {
+                        currentInput = '0';
+                    } else {
+                        currentInput = num;
+                    }
+                } else {
+                    currentInput += num;
+                }
+            }
+            updateDisplay();
+        }
+
+        // 5. 소수점(.) 버튼을 눌렀을 때
+        function appendDecimal() {
+            if (shouldResetDisplay) {
+                currentInput = '0.';
+                shouldResetDisplay = false;
+                updateDisplay();
+                return;
+            }
+            // 소수점은 한 숫자에 하나만 들어갈 수 있으므로 이미 존재하는지 중복 검사합니다
+            if (!currentInput.includes('.')) {
+                currentInput += '.';
+            }
+            updateDisplay();
+        }
+
+        // 6. 사칙연산(+, -, *, /, %) 연산자 버튼을 클릭했을 때
+        function appendOperator(operator) {
+            // 이미 직전에 연산 기호를 설정한 상태에서 새로 변경하려는 경우
+            if (selectedOperator && !shouldResetDisplay) {
+                // 기존 연산을 먼저 한 뒤, 다음 연산자를 적용합니다
+                executeMath();
+            }
+            
+            previousInput = currentInput;
+            selectedOperator = operator;
+            shouldResetDisplay = true; // 다음 입력할 숫자는 화면을 깨끗하게 비우고 채우게 지시
+            updateDisplay();
+        }
+
+        // 7. 한 칸 지우기(Backspace ⌫) 버튼
+        function backspace() {
+            if (shouldResetDisplay) {
+                // 이미 연산이 끝난 결과를 보여주는 중에는 지우기가 무시되게 함
+                return;
+            }
+            if (currentInput.length > 1) {
+                currentInput = currentInput.slice(0, -1);
+            } else {
+                currentInput = '0';
+            }
+            updateDisplay();
+        }
+
+        // 8. 전체 초기화 (C) 버튼
+        function clearAll() {
+            currentInput = '0';
+            previousInput = '';
+            selectedOperator = '';
+            shouldResetDisplay = false;
+            updateDisplay();
+        }
+
+        // 9. 실제 계산기의 연산을 구동하는 핵심 메서드
+        function executeMath() {
+            let result = 0;
+            const prev = parseFloat(cleanCommas(previousInput));
+            const current = parseFloat(cleanCommas(currentInput));
+
+            // 두 숫자 중 하나라도 숫자가 아니면 연산을 진행하지 않습니다
+            if (isNaN(prev) || isNaN(current)) return;
+
+            // 소수점 계산시의 컴퓨터 2진수 연산 오류를 방지하기 위해, 
+            // 정밀 소수점 자릿수를 정리해 줍니다
+            switch (selectedOperator) {
+                case '+':
+                     result = prev + current;
+                     break;
+                case '-':
+                     result = prev - current;
+                     break;
+                case '*':
+                     result = prev * current;
+                     break;
+                case '/':
+                     // 0으로 나누려고 하는 위험한 상황에 대한 똑똑한 예외처리
+                     if (current === 0) {
+                         alert('0으로 나눌 수 없습니다!');
+                         clearAll();
+                         return;
+                     }
+                     result = prev / current;
+                     break;
+                case '%':
+                     result = (prev * current) / 100;
+                     break;
+                default:
+                     return;
+            }
+
+            // 부동소수점 오차 제어 (최대 10글자 소수점 제한 후, 불필요한 소수점 이하 0 제거)
+            currentInput = parseFloat(result.toFixed(10)).toString();
+        }
+
+        // 10. 등호(=)를 눌렀을 때 작동하는 함수
+        function runCalculate() {
+            // 연산자와 이전 값이 존재할 때만 정상적으로 계산기를 돌립니다
+            if (!selectedOperator || previousInput === '') return;
+
+            const formulaText = `${formatNumberWithCommas(previousInput)} ${selectedOperator === '*' ? '×' : selectedOperator === '/' ? '÷' : selectedOperator} ${formatNumberWithCommas(currentInput)}`;
+            
+            executeMath(); // 연산 실행
+            
+            const resultText = formatNumberWithCommas(currentInput);
+            
+            // 수식 히스토리에 기록을 추가합니다
+            addHistoryItem(formulaText, resultText);
+
+            selectedOperator = '';
+            previousInput = '';
+            shouldResetDisplay = true; // 계산 끝났으니 다음 숫자는 새 출발!
+            updateDisplay();
+        }
+
+        // 11. 💼 대망의 재무/세무용 부가세(VAT) 계산 전용 비즈니스 로직
+        function calculateVAT(type) {
+            const rawVal = parseFloat(cleanCommas(currentInput));
+            if (isNaN(rawVal) || rawVal === 0) return;
+
+            let result = 0;
+            let title = '';
+            let formula = '';
+
+            switch (type) {
+                case 'include':
+                    // 10% 부가세를 추가합니다 (공급가 -> 합계금액)
+                    result = rawVal * 1.1;
+                    title = 'VAT +10% (포함)';
+                    formula = `${formatNumberWithCommas(rawVal.toString())} + 10% VAT`;
+                    break;
+                case 'exclude':
+                    // 합계금액에서 10% 부가세를 차감한 원래 공급가를 구합니다
+                    result = rawVal / 1.1;
+                    title = 'VAT -10% (제외)';
+                    formula = `${formatNumberWithCommas(rawVal.toString())} ÷ 1.1`;
+                    break;
+                case 'taxOnly':
+                    // 공급가 기준으로 10%에 해당하는 세금 금액만 구합니다
+                    result = rawVal * 0.1;
+                    title = 'VAT 10% 세액';
+                    formula = `${formatNumberWithCommas(rawVal.toString())} × 0.1`;
+                    break;
+                case 'taxInside':
+                    // 부가세가 이미 섞여있는 합계 금액에서 순수 세금 액수만 떼어냅니다 (금액 / 11)
+                    result = rawVal / 11;
+                    title = 'VAT 내부세 (1/11)';
+                    formula = `${formatNumberWithCommas(rawVal.toString())} ÷ 11`;
+                    break;
+            }
+
+            // 소수점 2째자리까지 깔끔하게 떨어지도록 라운딩 처리 (실무 보정)
+            // 보통 원화는 소수점이 없으므로 정수로 반올림해 줍니다. 
+            // 단, 소수점이 원치 않게 잘리는 경우를 위해 Math.round를 사용합니다
+            result = Math.round(result);
+
+            const resultText = formatNumberWithCommas(result.toString());
+            const formulaText = `[${title}] ${formula}`;
+
+            // 계산 결과 대입
+            currentInput = result.toString();
+            updateDisplay();
+
+            // 기록 추가
+            addHistoryItem(formulaText, resultText);
+            shouldResetDisplay = true; // 다음 연산을 위해 화면 대기 상태 설정
+        }
+
+        // 12. 계산 기록(History) 추가 함수
+        function addHistoryItem(formula, result) {
+            const newItem = { formula, result };
+            // 리스트 맨 처음에 추가하여 가장 최근 연산이 맨 위에 올라오도록 배치
+            calculationHistory.unshift(newItem);
+            
+            // 너무 오래전의 기록은 메모리 확보를 위해 최대 30개로 개수 제한을 둡니다
+            if (calculationHistory.length > 30) {
+                calculationHistory.pop();
+            }
+
+            // 브라우저의 로컬메모리에 저장하여 나중에 껐다 켜도 남아있도록 조치합니다
+            localStorage.setItem('calc_history', JSON.stringify(calculationHistory));
+            
+            renderHistory();
+        }
+
+        // 13. 계산 기록 화면을 새로 그려주는 함수
+        function renderHistory() {
+            // 기존 기록 리스트를 다 비웁니다
+            const items = historyContainer.querySelectorAll('.history-item');
+            items.forEach(el => el.remove());
+
+            if (calculationHistory.length === 0) {
+                historyEmptyText.style.display = 'block';
+                return;
+            }
+
+            historyEmptyText.style.display = 'none';
+
+            // 배열을 돌며 HTML 요소로 추가합니다
+            calculationHistory.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.onclick = function() {
+                    // 기록 항목을 클릭하면 계산기로 그 결과를 다시 호출합니다! (클릭 복원)
+                    currentInput = cleanCommas(item.result);
+                    shouldResetDisplay = true;
+                    updateDisplay();
+                };
+                div.innerHTML = `
+                    <div class="history-item-formula">${item.formula}</div>
+                    <div class="history-item-result">${item.result}</div>
+                `;
+                historyContainer.appendChild(div);
+            });
+        }
+
+        // 14. 계산 기록 전체 삭제 (모두 비우기)
+        function clearHistory() {
+            if (confirm('모든 계산 기록을 지우시겠습니까?')) {
+                calculationHistory = [];
+                localStorage.removeItem('calc_history');
+                renderHistory();
+            }
+        }
+
+        // 15. 결과값 원클릭 클립보드 복사 기능
+        function copyToClipboard() {
+            // 현재 화면의 숫자를 가져와서 클립보드에 입력합니다
+            const valueToCopy = formatNumberWithCommas(currentInput);
+            
+            navigator.clipboard.writeText(valueToCopy).then(() => {
+                // 성공 시 하단에서 복사 완료 알림 창(Toast) 띄우기
+                toastMessage.classList.add('show');
+                setTimeout(() => {
+                    toastMessage.classList.remove('show');
+                }, 2000); // 2초 뒤 스르륵 사라짐
+            }).catch(err => {
+                console.error('복사 실패:', err);
+            });
+        }
+
+        // 16. 밤낮이 바뀔 때 눈의 건강을 위한 다크 테마 / 라이트 테마 전환 토글 함수
+        function toggleTheme() {
+            const body = document.body;
+            const themeBtn = document.getElementById('theme-btn');
+            
+            if (body.getAttribute('data-theme') === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                themeBtn.textContent = '☀️'; // 다크모드일 때는 해 아이콘으로 변경
+                themeBtn.title = '라이트 모드로 전환';
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeBtn.textContent = '🌙'; // 라이트모드일 때는 달 아이콘으로 변경
+                themeBtn.title = '다크 모드로 전환';
+            }
+        }
+    </script>
+</body>
+</html>

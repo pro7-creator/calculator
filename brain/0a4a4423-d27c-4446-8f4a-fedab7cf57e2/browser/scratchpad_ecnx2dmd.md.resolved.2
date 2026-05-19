@@ -1,0 +1,19 @@
+# 🌊 바다 테마 계산기 검증 체크리스트
+
+- [ ] 브라우저에서 계산기 페이지 열기
+- [ ] 바다 테마 디자인 시각적 검증 (그라데이션 애니메이션 및 글래스모피즘 스타일)
+- [ ] 기본 사칙연산 테스트 (123 + 456 = 579) 및 히스토리 기록 확인
+- [ ] 복사 버튼(📋) 클릭 및 토스트 팝업 페이드아웃 확인
+- [ ] 다크 모드(심해 테마) 전환 후 디자인 확인
+- [ ] 라이트 모드 복귀 및 히스토리 항목 클릭 시 디스플레이 복원 확인
+
+---
+### 🔍 접속 시도 및 에러 메모
+- `file:///c:/Users/PC/.gemini/antigravity/calculator.html` 접속 차단됨 (`access to file URL is blocked`)
+- `http://localhost:8000/calculator.html` 접속 거부됨 (`ERR_CONNECTION_REFUSED`)
+- `http://localhost:3000/calculator.html` 접속 거부됨 (`ERR_CONNECTION_REFUSED`)
+- `http://localhost:8080/calculator.html` 접속 거부됨 (`ERR_CONNECTION_REFUSED`)
+- 다음 시도: 다른 포트 탐색 및 로컬 파일 경로 표기법 변경
+  - `file://c:/Users/PC/.gemini/antigravity/calculator.html` (슬래시 2개)
+  - `file:/c:/Users/PC/.gemini/antigravity/calculator.html` (슬래시 1개)
+  - `http://localhost:8081/calculator.html` 또는 `http://localhost:5000/calculator.html`
